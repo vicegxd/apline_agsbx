@@ -8,9 +8,30 @@
 
 | 文件 | 用途 | 什么时候用 |
 |---|---|---|
+| `agsbx-init.sh` | **首装一键脚本**：环境检查 + 安装 + 加固 + 打印节点，一条命令走完 | **全新的空容器** |
 | `agsbx-128mb-tune.sh` | 低内存加固脚本 | **已装好 argosbx 的机器直接跑**，无需重装 |
 | `argosbx-opt.sh` | 优化后的 argosbx 主脚本，用法与原脚本一致 | 首次安装 / 重装时 |
 | `argosbx-低内存优化说明.md` | 改动清单、原理、用法与取舍 | 想了解细节时 |
+
+## 首次部署（全新容器）
+
+一条命令装好并加固（默认 hysteria2 + anytls，端口 20088）：
+
+```bash
+wget -qO /tmp/init.sh https://raw.githubusercontent.com/vicegxd/apline_agsbx/main/agsbx-init.sh && bash /tmp/init.sh
+```
+
+自定义协议，或改成稳字优先：
+
+```bash
+# 自定义协议（argosbx 的变量都会透传给主脚本）
+hypt="20088" anpt="20088" bash /tmp/init.sh
+
+# 稳字优先：hy2 限速 100Mbps，不崩也不卡
+PERF=0 HY2_MBPS=100 bash /tmp/init.sh
+```
+
+脚本按顺序做四件事：**环境检查 → 装 argosbx → 低内存加固（默认 `PERF=1` 贴极限）→ 打印节点与常用命令**。幂等，重复跑不会重复安装。
 
 ## 一键加固
 
