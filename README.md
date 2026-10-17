@@ -17,18 +17,20 @@
 
 一条命令装好并加固（默认 hysteria2 + anytls，端口 20088）：
 
-```bash
-wget -qO /tmp/init.sh https://raw.githubusercontent.com/vicegxd/apline_agsbx/main/agsbx-init.sh && bash /tmp/init.sh
+```sh
+wget -qO /tmp/init.sh https://raw.githubusercontent.com/vicegxd/apline_agsbx/main/agsbx-init.sh && sh /tmp/init.sh
 ```
+
+> ⚠️ **Alpine 用户注意**：Alpine 默认只有 `ash`，**没有 `bash`**，所以上面用 `sh` 执行（脚本内部会自动补装 bash）。若写成 `bash /tmp/init.sh` 会直接报 `bash: not found`。
 
 自定义协议，或改成稳字优先：
 
-```bash
+```sh
 # 自定义协议（argosbx 的变量都会透传给主脚本）
-hypt="20088" anpt="20088" bash /tmp/init.sh
+hypt="20088" anpt="20088" sh /tmp/init.sh
 
 # 稳字优先：hy2 限速 100Mbps，不崩也不卡
-PERF=0 HY2_MBPS=100 bash /tmp/init.sh
+PERF=0 HY2_MBPS=100 sh /tmp/init.sh
 ```
 
 脚本按顺序做四件事：**环境检查 → 装 argosbx → 低内存加固（默认 `PERF=1` 贴极限）→ 打印节点与常用命令**。幂等，重复跑不会重复安装。

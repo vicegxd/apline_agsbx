@@ -1,18 +1,17 @@
-#!/bin/bash
+#!/bin/sh
 # ============================================================
 #  argosbx 容器首装一键脚本
 #  适用：Alpine + 小内存 LXC/NAT 容器（128MB 级）
 #  做三件事： ① 装 argosbx  ② 低内存加固  ③ 打印节点与常用命令
 #
-#  用法：
-#    直接跑（默认 hy2 + anytls，端口 20088）：
-#      bash agsbx-init.sh
+#  用法（Alpine 默认只有 ash，用 sh 执行即可，脚本会自动补 bash）：
+#    wget -qO /tmp/init.sh <本脚本地址> && sh /tmp/init.sh
 #
 #    自定义协议（所有 argosbx 变量都会透传给主脚本）：
-#      hypt="20088" anpt="20088" bash agsbx-init.sh
+#      hypt="20088" anpt="20088" sh /tmp/init.sh
 #
 #    想要稳字优先（hy2 限速 100Mbps）而不是贴极限：
-#      PERF=0 HY2_MBPS=100 bash agsbx-init.sh
+#      PERF=0 HY2_MBPS=100 sh /tmp/init.sh
 # ============================================================
 export LANG=en_US.UTF-8
 
@@ -75,6 +74,17 @@ if [ -z "${hypt:-}${anpt:-}${vlpt:-}${vmpt:-}${tupt:-}${xhpt:-}${vxpt:-}${sspt:-
   echo "  未指定协议变量，使用默认：hysteria2 + anytls（端口 20088，UDP/TCP 不冲突）"
 else
   echo "  按你指定的协议变量安装"
+fi
+
+# ---------- 确保有 bash（Alpine 默认只有 ash，而 argosbx 主脚本是 bash 脚本）----------
+if ! command -v bash >/dev/null 2>&1; then
+  echo "  系统没有 bash（Alpine 默认只有 ash），正在安装……"
+  command -v apk >/dev/null 2>&1 && apk add --no-cache bash >/dev/null 2>&1
+  if ! command -v bash >/dev/null 2>&1; then
+    echo "  ❌ bash 安装失败，请先手动执行： apk add --no-cache bash"
+    exit 1
+  fi
+  echo "  ✓ bash 已就绪"
 fi
 
 # ---------- 1. 安装主脚本 ----------
